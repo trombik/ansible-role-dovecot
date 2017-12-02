@@ -5,9 +5,11 @@ package = "dovecot"
 service = "dovecot"
 config_dir = "/etc/dovecot"
 ports = [143]
+user = "dovecot"
 default_owner = "root"
 default_group = "root"
 base_dir = "/var/run/dovecot"
+extra_groups = ["nobody"]
 
 case os[:family]
 when "freebsd"
@@ -15,6 +17,7 @@ when "freebsd"
   default_group = "wheel"
 when "openbsd"
   default_group = "wheel"
+  user = "_dovecot"
 end
 
 config = "#{config_dir}/dovecot.conf"
@@ -22,6 +25,13 @@ confd_dir = "#{config_dir}/conf.d"
 
 describe package(package) do
   it { should be_installed }
+end
+
+describe user(user) do
+  it { should exist }
+  extra_groups.each do |g|
+    it { should belong_to_group g }
+  end
 end
 
 describe file(confd_dir) do

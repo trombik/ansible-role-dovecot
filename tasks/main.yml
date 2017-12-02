@@ -14,6 +14,12 @@
 
 - include: "install-{{ ansible_os_family }}.yml"
 
+- name: Add dovecot user to dovecot_extra_groups
+  user:
+    name: "{{ dovecot_user }}"
+    append: yes
+    groups: "{{ dovecot_extra_groups }}"
+
 - name: Create conf directory
   file:
     path: "{{ dovecot_conf_dir }}"
