@@ -10,3 +10,4 @@ dovecot_base_dir: "{{ __dovecot_base_dir }}"
 dovecot_config: ""
 dovecot_config_fragments: []
 dovecot_login_class: "{{ __dovecot_login_class }}"
+dovecot_extra_groups: []

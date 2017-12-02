@@ -22,6 +22,7 @@ None
 | `dovecot_config` | Content of `dovecot.conf(5)` | `""` |
 | `dovecot_config_fragments` | List of dict of additional configuration file fragments. See below | `[]` |
 | `dovecot_login_class` | login class to append to `login.conf(5)`. Used only when `ansible_os_family` is `OpenBSD` | `{{ __dovecot_login_class }}` |
+| `dovecot_extra_groups` | Additional list of groups to add `dovecot` user | `[]` |
 
 ## `dovecot_config_fragments`
 
@@ -59,11 +60,14 @@ under `dovecot_confd_dir`.
 | `__dovecot_service` | `dovecot` |
 | `__dovecot_package` | `dovecot` |
 | `__dovecot_base_dir` | `/var/run/dovecot` |
-| `__dovecot_login_class` | `dovecot:\
+| `__dovecot_login_class` | see below |
+
+```
+dovecot:\
   :openfiles-cur=512:\
   :openfiles-max=2048:\
   :tc=daemon:
-` |
+```
 
 # Dependencies
 
@@ -76,6 +80,8 @@ None
   roles:
     - ansible-role-dovecot
   vars:
+    dovecot_extra_groups:
+      - nobody
     dovecot_config: |
       protocols = imap
       listen = *

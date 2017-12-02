@@ -2,6 +2,8 @@
   roles:
     - ansible-role-dovecot
   vars:
+    dovecot_extra_groups:
+      - nobody
     dovecot_config: |
       protocols = imap
       listen = *
