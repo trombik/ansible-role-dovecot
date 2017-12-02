@@ -1,0 +1,12 @@
+---
+
+- name: Install dovecot
+  openbsd_pkg:
+    name: "{{ dovecot_package }}"
+    state: present
+
+- name: Enable dovecot
+  service:
+    name: "{{ dovecot_service }}"
+    arguments: "{{ dovecot_flags }}"
+    enabled: yes

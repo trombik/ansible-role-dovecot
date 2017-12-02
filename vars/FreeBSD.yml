@@ -1,2 +1,6 @@
-__dovecot_db_dir: /var/db/dovecot
+__dovecot_user: dovecot
+__dovecot_group: dovecot
 __dovecot_conf_dir: /usr/local/etc/dovecot
+__dovecot_service: dovecot
+__dovecot_package: mail/dovecot
+__dovecot_base_dir: /var/run/dovecot

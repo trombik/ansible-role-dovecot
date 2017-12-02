@@ -1,8 +1,11 @@
-dovecot_user: dovecot
-dovecot_group: dovecot
-dovecot_log_dir: /var/log/dovecot
-dovecot_db_dir: "{{ __dovecot_db_dir }}"
-dovecot_service: dovecot
+dovecot_user: "{{ __dovecot_user }}"
+dovecot_group: "{{ __dovecot_group }}"
+dovecot_service: "{{ __dovecot_service }}"
+dovecot_package: "{{ __dovecot_package }}"
 dovecot_conf_dir: "{{ __dovecot_conf_dir }}"
+dovecot_confd_dir: "{{ dovecot_conf_dir }}/conf.d"
 dovecot_conf_file: "{{ __dovecot_conf_dir }}/dovecot.conf"
 dovecot_flags: ""
+dovecot_base_dir: "{{ __dovecot_base_dir }}"
+dovecot_config: ""
+dovecot_config_fragments: []

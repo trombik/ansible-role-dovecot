@@ -8,9 +8,8 @@ gem "kitchen-verifier-serverspec", "~> 0.3.0"
 gem "kitchen-verifier-shell", "~> 0.2.0"
 gem "rack", "~> 1.6.4" # rack 2.x requires ruby >= 2.2.2
 gem "rake", "~> 11.1.2"
-gem "rake-retry", "~> 0.5.6"
 gem "rspec", "~> 3.4.0"
-gem "rubocop", "~> 0.47.1"
+gem "rubocop", "~> 0.51.0"
 gem "serverspec", "~> 2.37.2"
 gem "specinfra", ">= 2.63.2" # OpenBSD's `port` is fixed in this version
 gem "test-kitchen", "~> 1.6.0"
