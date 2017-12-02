@@ -10,3 +10,9 @@
     name: "{{ dovecot_service }}"
     arguments: "{{ dovecot_flags }}"
     enabled: yes
+
+- name: Create login.conf(5) entry for dovecot user
+  # see /usr/local/share/doc/pkg-readmes/dovecot-*
+  blockinfile:
+    path: /etc/login.conf
+    block: "{{ dovecot_login_class }}"

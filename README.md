@@ -21,6 +21,7 @@ None
 | `dovecot_base_dir` | `base_dir` in `dovecot.conf(5)` | `{{ __dovecot_base_dir }}` |
 | `dovecot_config` | Content of `dovecot.conf(5)` | `""` |
 | `dovecot_config_fragments` | List of dict of additional configuration file fragments. See below | `[]` |
+| `dovecot_login_class` | login class to append to `login.conf(5)`. Used only when `ansible_os_family` is `OpenBSD` | `{{ __dovecot_login_class }}` |
 
 ## `dovecot_config_fragments`
 
@@ -46,6 +47,7 @@ under `dovecot_confd_dir`.
 | `__dovecot_service` | `dovecot` |
 | `__dovecot_package` | `mail/dovecot` |
 | `__dovecot_base_dir` | `/var/run/dovecot` |
+| `__dovecot_login_class` | `""` |
 
 ## OpenBSD
 
@@ -57,6 +59,11 @@ under `dovecot_confd_dir`.
 | `__dovecot_service` | `dovecot` |
 | `__dovecot_package` | `dovecot` |
 | `__dovecot_base_dir` | `/var/run/dovecot` |
+| `__dovecot_login_class` | `dovecot:\
+  :openfiles-cur=512:\
+  :openfiles-max=2048:\
+  :tc=daemon:
+` |
 
 # Dependencies
 
