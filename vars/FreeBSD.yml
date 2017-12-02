@@ -4,3 +4,4 @@ __dovecot_conf_dir: /usr/local/etc/dovecot
 __dovecot_service: dovecot
 __dovecot_package: mail/dovecot
 __dovecot_base_dir: /var/run/dovecot
+__dovecot_login_class: ""

@@ -77,6 +77,11 @@ when "freebsd"
     its(:content) { should match(/^dovecot_flags=""$/) }
   end
 when "openbsd"
+  describe file("/etc/login.conf") do
+    it { should be_file }
+    its(:content) { should match(/^dovecot:\\\n\s+:openfiles-cur=512:\\\n\s+:openfiles-max=2048:\\\n\s+:tc=daemon:$/) }
+  end
+
   describe command("rcctl get #{service} flags") do
     its(:exit_status) { should eq 0 }
     its(:stdout) { should eq "" }
