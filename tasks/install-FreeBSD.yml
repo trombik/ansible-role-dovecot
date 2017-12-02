@@ -1,0 +1,6 @@
+---
+
+- name: Install dovecot
+  pkgng:
+    name: dovecot
+    state: present

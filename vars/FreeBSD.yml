@@ -1,0 +1,2 @@
+__dovecot_db_dir: /var/db/dovecot
+__dovecot_conf_dir: /usr/local/etc/dovecot

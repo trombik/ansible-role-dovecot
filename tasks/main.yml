@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-dovecot
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ dovecot_log_dir }}"
+    mode: 0755
+    owner: "{{ dovecot_user }}"
+    group: "{{ dovecot_group }}"
+    state: directory
+  notify: Restart dovecot
+
+- name: Create db directory
+  file:
+    path: "{{ dovecot_db_dir }}"
+    mode: 0755
+    owner: "{{ dovecot_user }}"
+    group: "{{ dovecot_group }}"
+    state: directory
+  notify: Restart dovecot
+
+- name: Create dovecot.conf
+  template:
+    src: dovecot.conf.j2
+    dest: "{{ dovecot_conf_file }}"
+    validate: echo %s
+  notify: Restart dovecot
+
+- name: Start dovecot
+  service:
+    name: "{{ dovecot_service }}"
+    enabled: true
+    state: started

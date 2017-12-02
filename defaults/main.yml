@@ -1,0 +1,8 @@
+dovecot_user: dovecot
+dovecot_group: dovecot
+dovecot_log_dir: /var/log/dovecot
+dovecot_db_dir: "{{ __dovecot_db_dir }}"
+dovecot_service: dovecot
+dovecot_conf_dir: "{{ __dovecot_conf_dir }}"
+dovecot_conf_file: "{{ __dovecot_conf_dir }}/dovecot.conf"
+dovecot_flags: ""
