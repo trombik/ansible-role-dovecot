@@ -2,5 +2,10 @@
 
 - name: Install dovecot
   pkgng:
-    name: dovecot
+    name: "{{ dovecot_package }}"
     state: present
+
+- name: Create /etc/rc.conf.d/dovecot
+  template:
+    src: FreeBSD.rcd.j2
+    dest: "/etc/rc.conf.d/{{ dovecot_service }}"

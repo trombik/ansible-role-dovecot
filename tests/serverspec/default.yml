@@ -2,4 +2,28 @@
   roles:
     - ansible-role-dovecot
   vars:
-    dovecot_config: ""
+    dovecot_config: |
+      protocols = imap
+      listen = *
+      base_dir = "{{ dovecot_base_dir }}"
+      {% for i in dovecot_config_fragments %}
+      {% if i.state == 'present' %}
+      !include {{ dovecot_confd_dir }}/{{ i.name }}
+      {% endif %}
+      {% endfor %}
+
+    dovecot_config_fragments:
+      - name: foo.conf
+        state: absent
+      - name: auth.conf
+        state: present
+        mode: "0640"
+        content: |
+          disable_plaintext_auth = no
+          passdb {
+            driver = {% if ansible_os_family == 'FreeBSD' %}pam{% elif ansible_os_family == 'OpenBSD' %}bsdauth{% endif %}
+
+          }
+          userdb {
+            driver = passwd
+          }

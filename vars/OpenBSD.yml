@@ -1,0 +1,6 @@
+__dovecot_user: _dovecot
+__dovecot_group: _dovecot
+__dovecot_conf_dir: /etc/dovecot
+__dovecot_service: dovecot
+__dovecot_package: dovecot
+__dovecot_base_dir: /var/run/dovecot
