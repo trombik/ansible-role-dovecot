@@ -9,3 +9,4 @@
   template:
     src: FreeBSD.rcd.j2
     dest: "/etc/rc.conf.d/{{ dovecot_service }}"
+    validate: sh -n %s
