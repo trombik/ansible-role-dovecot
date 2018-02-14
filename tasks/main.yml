@@ -12,7 +12,7 @@
       - item.name | length > 0
   with_items: "{{ dovecot_config_fragments }}"
 
-- include: "install-{{ ansible_os_family }}.yml"
+- include_tasks: "install-{{ ansible_os_family }}.yml"
 
 - name: Add dovecot user to dovecot_extra_groups
   user:
