@@ -30,6 +30,11 @@
     path: "{{ dovecot_confd_dir }}"
     state: directory
 
+- name: Include x509_certificate
+  import_role:
+    name: trombik.x509-certificate
+  when: dovecot_include_role_x509_certificate
+
 - name: Create dovecot_config_fragments
   template:
     dest: "{{ dovecot_confd_dir }}/{{ item.name }}"
