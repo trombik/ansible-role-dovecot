@@ -73,8 +73,10 @@ dovecot:\
 ## TLS/SSL support
 
 The role implements TLS/SSL support by importing `trombik.x509-certificate`
-during the play. `trombik.x509-certificate` must be available by listing it
-in `requirements.yml`. Set `dovecot_include_role_x509_certificate` to `yes`.
+during the play.
+[`trombik.x509-certificate`](https://github.com/trombik/ansible-role-x509-certificate)
+must be available by listing it in `requirements.yml`, then set
+`dovecot_include_role_x509_certificate` to `yes`.
 
 See
 [tests/serverspec/default.yml](tests/serverspec/default.yml) for an example.
