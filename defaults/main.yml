@@ -11,3 +11,4 @@ dovecot_config: ""
 dovecot_config_fragments: []
 dovecot_login_class: "{{ __dovecot_login_class }}"
 dovecot_extra_groups: []
+dovecot_include_role_x509_certificate: no

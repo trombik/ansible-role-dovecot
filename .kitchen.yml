@@ -13,13 +13,12 @@ provisioner:
   ansible_verbosity: 1
   ansible_verbose: true
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
-  # requirements_path: requirements.yml
+  requirements_path: requirements.yml
   http_proxy: <%= ENV['ANSIBLE_PROXY'] %>
   idempotency_test: true
   additional_copy_path:
     - extra_modules
     - filter_plugins
-  ansible_vault_password_file: <%= File.expand_path(ENV['ANSIBLE_VAULT_PASSWORD_FILE'] || '') %>
 
 platforms:
   - name: freebsd-11.1-amd64
@@ -47,17 +46,6 @@ platforms:
   - name: openbsd-6.2-amd64
     driver:
       box: trombik/ansible-openbsd-6.2-amd64
-      box_check_update: false
-    driver_config:
-      ssh:
-        shell: '/bin/sh'
-    provisioner:
-      extra_vars:
-        ansible_python_interpreter: '/usr/local/bin/python'
-
-  - name: openbsd-snapshotamd64
-    driver:
-      box: trombik/ansible-openbsd-snapshot-amd64
       box_check_update: false
     driver_config:
       ssh:
