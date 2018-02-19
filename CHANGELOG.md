@@ -1,3 +1,7 @@
+## Release 1.2.1
+
+* 7ce962a [bugfix] QA (#13)
+
 ## Release 1.2.0
 
 * 5a2cf8a [feature] support TLS/SSL (#11)
