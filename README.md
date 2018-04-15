@@ -14,6 +14,7 @@ None
 | `dovecot_group` | Group name of `dovecot` | `{{ __dovecot_group }}` |
 | `dovecot_service` | Service name of `dovecot` | `{{ __dovecot_service }}` |
 | `dovecot_package` | Package name of `dovecot` | `{{ __dovecot_package }}` |
+| `dovecot_packages_extra` | Extra packages to install (Debian only) | `[]` |
 | `dovecot_conf_dir` | Path to directory where `dovecot.conf` resides | `{{ __dovecot_conf_dir }}` |
 | `dovecot_confd_dir` | Path to `conf.d` | `{{ dovecot_conf_dir }}/conf.d` |
 | `dovecot_conf_file` | Path to `dovecot.conf(5)` | `{{ __dovecot_conf_dir }}/dovecot.conf` |
@@ -69,6 +70,18 @@ dovecot:\
   :openfiles-max=2048:\
   :tc=daemon:
 ```
+
+## Debian
+
+| Variable | Default |
+|----------|---------|
+| `__dovecot_user` | `dovecot` |
+| `__dovecot_group` | `dovecot` |
+| `__dovecot_conf_dir` | `/etc/dovecot` |
+| `__dovecot_service` | `dovecot` |
+| `__dovecot_package` | `dovecot-core` |
+| `__dovecot_base_dir` | `/var/run/dovecot` |
+| `__dovecot_login_class` | `""` |
 
 ## TLS/SSL support
 
