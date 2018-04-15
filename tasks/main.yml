@@ -33,7 +33,7 @@
     state: directory
 
 - name: Include x509_certificate
-  import_role:
+  include_role:
     name: trombik.x509-certificate
   when: dovecot_include_role_x509_certificate
 
