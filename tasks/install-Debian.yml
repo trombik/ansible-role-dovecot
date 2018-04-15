@@ -3,3 +3,9 @@
   apt:
     name: "{{ dovecot_package }}"
     state: present
+
+- name: Install additional packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dovecot_packages_extra }}"
