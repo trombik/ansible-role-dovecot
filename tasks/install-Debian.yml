@@ -1,0 +1,5 @@
+---
+- name: Install dovecot package
+  apt:
+    name: "{{ dovecot_package }}"
+    state: present
