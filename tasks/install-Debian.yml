@@ -1,0 +1,11 @@
+---
+- name: Install dovecot package
+  apt:
+    name: "{{ dovecot_package }}"
+    state: present
+
+- name: Install additional packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dovecot_extra_packages }}"

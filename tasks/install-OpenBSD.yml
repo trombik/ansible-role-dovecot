@@ -11,6 +11,12 @@
     arguments: "{{ dovecot_flags }}"
     enabled: yes
 
+- name: Install additional dovecot packages
+  openbsd_pkg:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dovecot_extra_packages }}"
+
 - name: Create login.conf(5) entry for dovecot user
   # see /usr/local/share/doc/pkg-readmes/dovecot-*
   blockinfile:

@@ -1,0 +1,7 @@
+__dovecot_user: dovecot
+__dovecot_group: dovecot
+__dovecot_conf_dir: /etc/dovecot
+__dovecot_service: dovecot
+__dovecot_package: dovecot-core
+__dovecot_base_dir: /var/run/dovecot
+__dovecot_login_class: ""

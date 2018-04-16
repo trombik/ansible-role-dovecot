@@ -98,10 +98,11 @@
             MNUO4TmsSHDnBrgFSg/czEg2sH527C4/hLPlIsNqCNKZf/MblRTrsWn823yA
             -----END RSA PRIVATE KEY-----
     dovecot_include_role_x509_certificate: true
-    dovecot_extra_groups:
-      - nobody
+    dovecot_extra_packages: "{% if ansible_os_family == 'Debian' %}[ 'dovecot-imapd' ]{% else %}[]{% endif %}"
+    dovecot_extra_groups: "{% if ansible_os_family == 'Debian' %}[ 'nogroup' ]{% else %}[ 'nobody' ]{% endif %}"
     dovecot_config: |
-      protocols = imaps
+      protocols = {% if ansible_os_family == 'Debian' %}imap{% else %}imaps{% endif %}
+
       listen = *
       base_dir = "{{ dovecot_base_dir }}"
       {% for i in dovecot_config_fragments %}
@@ -119,7 +120,7 @@
         content: |
           disable_plaintext_auth = yes
           passdb {
-            driver = {% if ansible_os_family == 'FreeBSD' %}pam{% elif ansible_os_family == 'OpenBSD' %}bsdauth{% endif %}
+            driver = {% if ansible_os_family == 'FreeBSD' or ansible_os_family == 'Debian' %}pam{% elif ansible_os_family == 'OpenBSD' %}bsdauth{% endif %}
 
           }
           userdb {
@@ -129,6 +130,15 @@
         state: present
         mode: "0640"
         content: |
+          {% if ansible_os_family == 'Debian' %}
+          # older dovecot complains:
+          # 'imaps' protocol can no longer be specified (use protocols=imap)
+          service imap-login {
+            inet_listener imap {
+              port = 0
+            }
+          }
+          {% endif %}
           ssl = required
           ssl_cert = <{{ dovecot_conf_dir }}/ssl/dovecot_pub.pem
           ssl_key = <{{ dovecot_conf_dir }}/ssl/dovecot_key.pem

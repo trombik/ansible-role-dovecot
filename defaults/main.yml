@@ -2,6 +2,7 @@ dovecot_user: "{{ __dovecot_user }}"
 dovecot_group: "{{ __dovecot_group }}"
 dovecot_service: "{{ __dovecot_service }}"
 dovecot_package: "{{ __dovecot_package }}"
+dovecot_extra_packages: []
 dovecot_conf_dir: "{{ __dovecot_conf_dir }}"
 dovecot_confd_dir: "{{ dovecot_conf_dir }}/conf.d"
 dovecot_conf_file: "{{ __dovecot_conf_dir }}/dovecot.conf"

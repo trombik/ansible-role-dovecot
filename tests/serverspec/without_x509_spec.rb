@@ -5,7 +5,7 @@ package = "dovecot"
 extra_packages = []
 service = "dovecot"
 config_dir = "/etc/dovecot"
-ports = [993]
+ports = [143]
 user = "dovecot"
 default_owner = "root"
 default_group = "root"
@@ -27,7 +27,6 @@ end
 
 config = "#{config_dir}/dovecot.conf"
 confd_dir = "#{config_dir}/conf.d"
-ssl_cert_dir = "#{config_dir}/ssl"
 
 describe package(package) do
   it { should be_installed }
@@ -46,23 +45,6 @@ describe user(user) do
   end
 end
 
-["dovecot_pub.pem", "dovecot_key.pem"].each do |f|
-  describe file("#{ssl_cert_dir}/#{f}") do
-    it { should exist }
-    it { should be_file }
-    it { should be_owned_by user }
-    it { should be_grouped_into default_group }
-    case f
-    when "dovecot_key.pem"
-      it { should be_mode 400 }
-      its(:content) { should match(/^-----BEGIN RSA PRIVATE KEY-----$/) }
-    when "dovecot_pub.pem"
-      it { should be_mode 444 }
-      its(:content) { should match(/^-----BEGIN CERTIFICATE-----$/) }
-    end
-  end
-end
-
 describe file(confd_dir) do
   it { should exist }
   it { should be_directory }
@@ -71,7 +53,7 @@ describe file(confd_dir) do
   it { should be_mode 755 }
 end
 
-["auth.conf", "ssl.conf"].each do |f|
+["auth.conf"].each do |f|
   describe file("#{confd_dir}/#{f}") do
     it { should exist }
     it { should be_file }
@@ -80,7 +62,7 @@ end
     it { should be_mode 640 }
     case f
     when "auth.conf"
-      its(:content) { should match(/^disable_plaintext_auth = yes$/) }
+      its(:content) { should match(/^disable_plaintext_auth = no$/) }
       passdb_driver = case os[:family]
                       when "openbsd"
                         "bsdauth"
@@ -89,10 +71,6 @@ end
                       end
 
       its(:content) { should match(/^passdb {\n\s+driver = #{passdb_driver}\n}\nuserdb {\n\s+driver = passwd\n}$/) }
-    when "ssl.conf"
-      its(:content) { should match(/^ssl = required$/) }
-      its(:content) { should match(/^ssl_cert = <#{Regexp.escape("#{config_dir}/ssl/dovecot_pub.pem")}$/) }
-      its(:content) { should match(/^ssl_key = <#{Regexp.escape("#{config_dir}/ssl/dovecot_key.pem")}$/) }
     end
   end
 end
@@ -103,11 +81,7 @@ describe file(config) do
   it { should be_owned_by default_owner }
   it { should be_grouped_into default_group }
   it { should be_mode 644 }
-  if os[:family] == "ubuntu"
-    its(:content) { should match(/^protocols = imap$/) }
-  else
-    its(:content) { should match(/^protocols = imaps$/) }
-  end
+  its(:content) { should match(/^protocols = imap$/) }
   its(:content) { should match(/^listen = \*$/) }
   its(:content) { should match(/^base_dir = "#{Regexp.escape(base_dir)}"$/) }
   ["auth.conf"].each do |conf|
@@ -150,21 +124,17 @@ ports.each do |p|
   end
 end
 
-describe port(143) do
+describe port(993) do
   it { should_not be_listening }
 end
 
-stderr_text = "depth=0 C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org
-verify error:num=18:self signed certificate
-verify return:1
-depth=0 C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org
-verify return:1
-DONE\n"
-describe command("(sleep 3 && echo) | openssl s_client -connect localhost:imaps") do
-  its(:exit_status) { should eq 0 }
-  its(:stderr) { should eq stderr_text }
-  # OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready.
-  its(:stdout) { should match(/^#{Regexp.escape("* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN]")} Dovecot (?:\(Ubuntu\) )?ready\.$/) }
-  its(:stdout) { should match(/^#{Regexp.escape("subject=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org")}$/) }
-  its(:stdout) { should match(/^#{Regexp.escape("issuer=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org")}$/) }
+# XXX use rspec-retry as somtimes initial attempt fails
+describe "IMAP banner", retry: 10, retry_wait: 1 do
+  it "displays the expected banner" do
+    nc_flags = os[:family] == "ubuntu" ? "" : "-N"
+    r = command "echo -n | nc #{nc_flags} localhost 143"
+    expect(r.exit_status).to eq 0
+    expect(r.stderr).to eq ""
+    expect(r.stdout).to match(/^#{Regexp.escape("* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN]")} Dovecot (?:\(Ubuntu\) )?ready\.$/)
+  end
 end
