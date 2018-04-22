@@ -1,3 +1,7 @@
+## Release 1.3.0
+
+* ac4c4d8 [feature][bugfix] support Ubuntu, introduce dovecot_extra_packages (#16)
+
 ## Release 1.2.1
 
 * 7ce962a [bugfix] QA (#13)
