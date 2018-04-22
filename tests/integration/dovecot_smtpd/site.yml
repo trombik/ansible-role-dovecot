@@ -1,1 +1,1 @@
-- include_playbook: server.yml
+- include: server.yml

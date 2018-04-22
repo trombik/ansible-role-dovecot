@@ -1,7 +1,8 @@
 ---
 # tasks file for ansible-role-dovecot
 
-- include_vars: "{{ ansible_os_family }}.yml"
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Assert dovecot_config_fragments has valid items
   assert:
@@ -12,7 +13,8 @@
       - item.name | length > 0
   with_items: "{{ dovecot_config_fragments }}"
 
-- include_tasks: "install-{{ ansible_os_family }}.yml"
+- name: Include OS-specific installation
+  include_tasks: "install-{{ ansible_os_family }}.yml"
 
 - name: Add dovecot user to dovecot_extra_groups
   user:
@@ -31,7 +33,7 @@
     state: directory
 
 - name: Include x509_certificate
-  import_role:
+  include_role:
     name: trombik.x509-certificate
   when: dovecot_include_role_x509_certificate
 

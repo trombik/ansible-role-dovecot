@@ -8,19 +8,15 @@ galaxy_info:
   platforms:
   - name: FreeBSD
     versions:
-    - 10.3
+      - 10.3
   - name: OpenBSD
     versions:
-    - 6.1
-    - 6.2
-#  - name: Ubuntu
-#    versions:
-#    - trusty
-#    - xenial
-#  - name: EL
-#    versions:
-#    - 7
-
+      - 6.1
+      - 6.2
+  - name: Ubuntu
+    versions:
+      - trusty
+      - xenial
   galaxy_tags:
     - imap
     - pop3

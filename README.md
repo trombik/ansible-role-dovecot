@@ -14,6 +14,7 @@ None
 | `dovecot_group` | Group name of `dovecot` | `{{ __dovecot_group }}` |
 | `dovecot_service` | Service name of `dovecot` | `{{ __dovecot_service }}` |
 | `dovecot_package` | Package name of `dovecot` | `{{ __dovecot_package }}` |
+| `dovecot_extra_packages` | List of extra packages to install | `[]` |
 | `dovecot_conf_dir` | Path to directory where `dovecot.conf` resides | `{{ __dovecot_conf_dir }}` |
 | `dovecot_confd_dir` | Path to `conf.d` | `{{ dovecot_conf_dir }}/conf.d` |
 | `dovecot_conf_file` | Path to `dovecot.conf(5)` | `{{ __dovecot_conf_dir }}/dovecot.conf` |
@@ -69,6 +70,18 @@ dovecot:\
   :openfiles-max=2048:\
   :tc=daemon:
 ```
+
+## Debian
+
+| Variable | Default |
+|----------|---------|
+| `__dovecot_user` | `dovecot` |
+| `__dovecot_group` | `dovecot` |
+| `__dovecot_conf_dir` | `/etc/dovecot` |
+| `__dovecot_service` | `dovecot` |
+| `__dovecot_package` | `dovecot-core` |
+| `__dovecot_base_dir` | `/var/run/dovecot` |
+| `__dovecot_login_class` | `""` |
 
 ## TLS/SSL support
 
@@ -188,10 +201,11 @@ None
             MNUO4TmsSHDnBrgFSg/czEg2sH527C4/hLPlIsNqCNKZf/MblRTrsWn823yA
             -----END RSA PRIVATE KEY-----
     dovecot_include_role_x509_certificate: true
-    dovecot_extra_groups:
-      - nobody
+    dovecot_extra_packages: "{% if ansible_os_family == 'Debian' %}[ 'dovecot-imapd' ]{% else %}[]{% endif %}"
+    dovecot_extra_groups: "{% if ansible_os_family == 'Debian' %}[ 'nogroup' ]{% else %}[ 'nobody' ]{% endif %}"
     dovecot_config: |
-      protocols = imaps
+      protocols = {% if ansible_os_family == 'Debian' %}imap{% else %}imaps{% endif %}
+
       listen = *
       base_dir = "{{ dovecot_base_dir }}"
       {% for i in dovecot_config_fragments %}
@@ -209,7 +223,7 @@ None
         content: |
           disable_plaintext_auth = yes
           passdb {
-            driver = {% if ansible_os_family == 'FreeBSD' %}pam{% elif ansible_os_family == 'OpenBSD' %}bsdauth{% endif %}
+            driver = {% if ansible_os_family == 'FreeBSD' or ansible_os_family == 'Debian' %}pam{% elif ansible_os_family == 'OpenBSD' %}bsdauth{% endif %}
 
           }
           userdb {
@@ -219,6 +233,15 @@ None
         state: present
         mode: "0640"
         content: |
+          {% if ansible_os_family == 'Debian' %}
+          # older dovecot complains:
+          # 'imaps' protocol can no longer be specified (use protocols=imap)
+          service imap-login {
+            inet_listener imap {
+              port = 0
+            }
+          }
+          {% endif %}
           ssl = required
           ssl_cert = <{{ dovecot_conf_dir }}/ssl/dovecot_pub.pem
           ssl_key = <{{ dovecot_conf_dir }}/ssl/dovecot_key.pem
@@ -227,7 +250,7 @@ None
 # License
 
 ```
-Copyright (c) 2017 Tomoyuki Sakurai <tomoyukis@reallyenglish.com>
+Copyright (c) 2017 Tomoyuki Sakurai <y@trombik.org>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -244,6 +267,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author Information
 
-Tomoyuki Sakurai <tomoyukis@reallyenglish.com>
+Tomoyuki Sakurai <y@trombik.org>
 
 This README was created by [qansible](https://github.com/trombik/qansible)

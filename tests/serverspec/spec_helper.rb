@@ -1,4 +1,5 @@
 require "serverspec"
+require "rspec/retry"
 
 set :backend, :ssh
 
