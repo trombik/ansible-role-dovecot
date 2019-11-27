@@ -183,11 +183,10 @@ describe command("(sleep 3 && echo) | openssl s_client -connect localhost:imaps"
                  when "openbsd", "ubuntu"
                    "subject=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org"
                  else
-                  raise "Unknown os[:family]: `#{os[:family]}`"
+                   raise "Unknown os[:family]: `#{os[:family]}`"
                  end
   imap_banner_text = case os[:family]
                      when "ubuntu"
-                       "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
                        "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
                      when "freebsd", "openbsd"
                        "* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN] Dovecot ready."
