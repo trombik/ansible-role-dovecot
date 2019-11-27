@@ -131,10 +131,20 @@ end
 # XXX use rspec-retry as somtimes initial attempt fails
 describe "IMAP banner", retry: 10, retry_wait: 1 do
   it "displays the expected banner" do
+    imap_banner_text = case os[:family]
+                       when "ubuntu"
+                         "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
+                         "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
+                       when "freebsd", "openbsd"
+                         "* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN] Dovecot ready."
+                       else
+                         raise "Unknown os[:family]: `#{os[:family]}`"
+                       end
     nc_flags = os[:family] == "ubuntu" ? "" : "-N"
     r = command "echo -n | nc #{nc_flags} localhost 143"
+
     expect(r.exit_status).to eq 0
     expect(r.stderr).to eq ""
-    expect(r.stdout).to match(/^#{Regexp.escape("* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN]")} Dovecot (?:\(Ubuntu\) )?ready\.$/)
+    expect(r.stdout).to match(/^#{Regexp.escape(imap_banner_text)}$/)
   end
 end
