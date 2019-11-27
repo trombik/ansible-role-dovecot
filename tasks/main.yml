@@ -34,7 +34,7 @@
 
 - name: Include x509_certificate
   include_role:
-    name: trombik.x509-certificate
+    name: trombik.x509_certificate
   when: dovecot_include_role_x509_certificate
 
 - name: Create dovecot_config_fragments
@@ -65,18 +65,7 @@
     validate: doveconf -c %s
   notify: Restart dovecot
 
-- name: Enable dovecot
-  # XXX FreeBSD port checks dovecot_service file even when running `service
-  # dovecot enabled`. this task cannot be placed before `Create dovecot.conf`
-  # task.
-  service:
-    name: "{{ dovecot_service }}"
-    enabled: yes
-  when:
-    - ansible_os_family == 'FreeBSD'
-
 - name: Start dovecot
   service:
     name: "{{ dovecot_service }}"
-    enabled: true
     state: started

@@ -5,6 +5,12 @@
     name: "{{ dovecot_package }}"
     state: present
 
+- name: Patch /usr/local/etc/rc.d/dovecot
+  patch:
+    src: FreeBSD.rc.patch
+    dest: /usr/local/etc/rc.d/dovecot
+    state: present
+
 - name: Install additional dovecot packages
   pkgng:
     name: "{{ item }}"
@@ -16,3 +22,8 @@
     src: FreeBSD.rcd.j2
     dest: "/etc/rc.conf.d/{{ dovecot_service }}"
     validate: sh -n %s
+
+- name: Enable dovecot
+  service:
+    name: "{{ dovecot_service }}"
+    enabled: yes
