@@ -21,6 +21,7 @@
     name: "{{ dovecot_user }}"
     append: yes
     groups: "{{ dovecot_extra_groups }}"
+    create_home: no
 
 - name: Create conf directory
   file:

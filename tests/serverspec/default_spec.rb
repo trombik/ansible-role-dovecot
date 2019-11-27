@@ -46,6 +46,13 @@ describe user(user) do
   end
 end
 
+# see https://github.com/trombik/ansible-role-dovecot/pull/18
+if os[:family] == "openbsd"
+  describe file "/nonexistent" do
+    it { should_not exist }
+  end
+end
+
 ["dovecot_pub.pem", "dovecot_key.pem"].each do |f|
   describe file("#{ssl_cert_dir}/#{f}") do
     it { should exist }
