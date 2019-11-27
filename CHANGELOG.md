@@ -1,3 +1,18 @@
+## Release 1.3.1
+
+* d4f1e59 bugfix: Do not create dovecot home directory
+* 4a27d94 bugfix: fix another bug in rc.d/dovecot
+* bbb8dcd bugfix: QA
+* b2386a5 bugfix: use a list, instead of with_items in package installations
+* a86a7ee bugfix: QA
+* e239cdb bugfix: QA
+* 5c24326 bugfix: update IMAP banner strings
+* a813969 bugfix: QA, update boxes, add no_proxy
+* e4e3144 bugfix: s/trombik.x509-certificate/trombik.x509_certificate/g
+* b8efec1 bugfix: update openssl error messages, and IMAP banner strings
+* cb93ebe bugfix: teach rc.d/dovecot to behave in a civilized manner
+* ebc0c61 bugfix: QA
+
 ## Release 1.3.0
 
 * ac4c4d8 [feature][bugfix] support Ubuntu, introduce dovecot_extra_packages (#16)
