@@ -1,6 +1,6 @@
 ---
 language: python
-python: "2.7"
+python: "3.6"
 
 # Use the new container infrastructure
 sudo: false
@@ -9,21 +9,36 @@ sudo: false
 addons:
   apt:
     packages:
-    - python-pip
-    - curl
-
+      - python-pip
+      - curl
 cache:
   directories:
     - $HOME/.rvm/
     - $HOME/.bundler/
     - $HOME/.cache/pip/
+  pip: true
+
+matrix:
+  include:
+    - env:
+        - TARGET_SCENARIO=travisci_ubuntu1804
+    - env:
+        - TARGET_SCENARIO=travisci_centos7
+
+before_install:
+  # XXX update RubyGem to fix build in Travis CI. when ruby 2.6.3 or later is
+  # available in travis environment, this can be removed.
+  # see details at:
+  # https://bundler.io/blog/2019/05/14/solutions-for-cant-find-gem-bundler-with-executable-bundle.html
+  - gem update --system
 
 install:
   # Install ansible
-  - pip install ansible
+  - pip install ansible yamllint molecule docker
 
-  # Check ansible version
+  # Check versions
   - ansible --version
+  - molecule --version
 
   # Create ansible.cfg with correct roles_path
   - mkdir -p extra_roles
@@ -44,10 +59,6 @@ script:
   # CI environment. Skip syntax check when it is a private repo.
   #
   - "if [ ! -f .private_repo ]; then ansible-playbook tests/travisci/tests.yml -i tests/travisci/inventory --syntax-check; fi"
-
-  # use recent ruby, instead of default ruby 1.9
-  - rvm install 2.3
-  - rvm use 2.3
 
   # download the QA scripts
   - git clone https://github.com/trombik/qansible.git
@@ -75,8 +86,21 @@ script:
   # run rubocop
   - bundle exec rubocop
 
+  # run yamllint
+  - yamllint -c .yamllint.yml .
+
   # run the QA test
   - qansible qa
+
+  # run molecule
+  - echo TARGET_SCENARIO=${TARGET_SCENARIO}
+  - |
+    if [ -d "tests/molecule/molecule/${TARGET_SCENARIO}" ]; then
+      cd tests/molecule
+      if molecule list; then
+        molecule test -s "${TARGET_SCENARIO}"
+      fi
+    fi
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
