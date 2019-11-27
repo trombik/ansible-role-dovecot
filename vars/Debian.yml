@@ -1,3 +1,4 @@
+---
 __dovecot_user: dovecot
 __dovecot_group: dovecot
 __dovecot_conf_dir: /etc/dovecot
