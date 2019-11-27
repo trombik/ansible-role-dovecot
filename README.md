@@ -24,7 +24,7 @@ None
 | `dovecot_config_fragments` | List of dict of additional configuration file fragments. See below | `[]` |
 | `dovecot_login_class` | login class to append to `login.conf(5)`. Used only when `ansible_os_family` is `OpenBSD` | `{{ __dovecot_login_class }}` |
 | `dovecot_extra_groups` | Additional list of groups to add `dovecot` user | `[]` |
-| `dovecot_include_role_x509_certificate` | Include `trombik.x509-certificate` role during the play | `no` |
+| `dovecot_include_role_x509_certificate` | Include `trombik.x509_certificate` role during the play | `no` |
 
 ## `dovecot_config_fragments`
 
@@ -85,9 +85,9 @@ dovecot:\
 
 ## TLS/SSL support
 
-The role implements TLS/SSL support by importing `trombik.x509-certificate`
+The role implements TLS/SSL support by importing `trombik.x509_certificate`
 during the play.
-[`trombik.x509-certificate`](https://github.com/trombik/ansible-role-x509-certificate)
+[`trombik.x509_certificate`](https://github.com/trombik/ansible-role-x509_certificate)
 must be available by listing it in `requirements.yml`, then set
 `dovecot_include_role_x509_certificate` to `yes`.
 
