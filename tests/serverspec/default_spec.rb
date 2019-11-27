@@ -158,13 +158,43 @@ stderr_text = "depth=0 C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = 
 verify error:num=18:self signed certificate
 verify return:1
 depth=0 C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org
+verify error:num=10:certificate has expired
+notAfter=Dec  1 03:57:09 2018 GMT
+verify return:1
+depth=0 C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org
+notAfter=Dec  1 03:57:09 2018 GMT
 verify return:1
 DONE\n"
+
 describe command("(sleep 3 && echo) | openssl s_client -connect localhost:imaps") do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq stderr_text }
-  # OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready.
-  its(:stdout) { should match(/^#{Regexp.escape("* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN]")} Dovecot (?:\(Ubuntu\) )?ready\.$/) }
-  its(:stdout) { should match(/^#{Regexp.escape("subject=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org")}$/) }
-  its(:stdout) { should match(/^#{Regexp.escape("issuer=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org")}$/) }
+  issuer_text = case os[:family]
+                when "freebsd"
+                  "issuer=C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org"
+                when "openbsd", "ubuntu"
+                  "issuer=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org"
+                else
+                  raise "Unknown os[:family]: `#{os[:family]}`"
+                end
+  subject_text = case os[:family]
+                 when "freebsd"
+                   "subject=C = TH, ST = Bangkok, O = Internet Widgits Pty Ltd, CN = a.mx.trombik.org"
+                 when "openbsd", "ubuntu"
+                   "subject=/C=TH/ST=Bangkok/O=Internet Widgits Pty Ltd/CN=a.mx.trombik.org"
+                 else
+                  raise "Unknown os[:family]: `#{os[:family]}`"
+                 end
+  imap_banner_text = case os[:family]
+                     when "ubuntu"
+                       "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
+                       "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
+                     when "freebsd", "openbsd"
+                       "* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN] Dovecot ready."
+                     else
+                       raise "Unknown os[:family]: `#{os[:family]}`"
+                     end
+  its(:stdout) { should match(/^#{Regexp.escape(imap_banner_text)}$/) }
+  its(:stdout) { should match(/^#{Regexp.escape(subject_text)}$/) }
+  its(:stdout) { should match(/^#{Regexp.escape(issuer_text)}$/) }
 end
