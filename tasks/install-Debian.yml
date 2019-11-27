@@ -4,11 +4,10 @@
     name: "{{ dovecot_package }}"
     state: present
 
-- name: Install additional packages
+- name: Install dovecot_extra_packages
   apt:
-    name: "{{ item }}"
+    name: "{{ dovecot_extra_packages }}"
     state: present
-  with_items: "{{ dovecot_extra_packages }}"
 
 - name: Enable dovecot
   service:
