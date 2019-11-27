@@ -1,0 +1,29 @@
+--- dovecot.orig	2019-11-15 02:56:29.000000000 +0000
++++ dovecot	2019-11-27 02:33:06.326485000 +0000
+@@ -62,19 +62,19 @@
+ 	if [ -s ${config} ]; then
+                ${command} ${command_args} -a 2>&1 >/dev/null
+                 if [ $? -ne 0 ]; then
+-                       echo "==Error=="
+-                       echo "Configuration file check failed."
++                       echo "==Error==" >/dev/stderr
++                       echo "Configuration file check failed." >/dev/stderr
+                        # Use dovecot to print the config error.
+-                       ${command} ${command_args} -a
++                       ${command} ${command_args} -a >/dev/stderr
+                        exit $?
+                 fi
+ 		base_dir=$(${command} ${command_args} -a 2>/dev/null | /usr/bin/awk -F '= ' '/^base_dir =/ { print $2 }')
+ 		pidfile="${base_dir}/master.pid"
+ 	else
+-		echo "==Error=="
+-		echo "Config file ${config} does not exist. If this is"
+-		echo "a new installation, please create the config files as outlined in"
+-		echo "	# pkg info -D dovecot"
++		echo "==Error==" >/dev/stderr
++		echo "Config file ${config} does not exist. If this is" >/dev/stderr
++		echo "a new installation, please create the config files as outlined in" >/dev/stderr
++		echo "	# pkg info -D dovecot" >/dev/stderr
+ 	fi
+ 	run_rc_command "$1"
+ done

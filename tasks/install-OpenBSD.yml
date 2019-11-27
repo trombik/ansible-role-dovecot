@@ -22,3 +22,8 @@
   blockinfile:
     path: /etc/login.conf
     block: "{{ dovecot_login_class }}"
+
+- name: Enable dovecot
+  service:
+    name: "{{ dovecot_service }}"
+    enabled: yes
