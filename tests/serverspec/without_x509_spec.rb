@@ -134,7 +134,6 @@ describe "IMAP banner", retry: 10, retry_wait: 1 do
     imap_banner_text = case os[:family]
                        when "ubuntu"
                          "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
-                         "* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN] Dovecot (Ubuntu) ready."
                        when "freebsd", "openbsd"
                          "* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN] Dovecot ready."
                        else
