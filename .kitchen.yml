@@ -15,15 +15,16 @@ provisioner:
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
   requirements_path: requirements.yml
   http_proxy: <%= ENV['ANSIBLE_PROXY'] %>
+  no_proxy: localhost,127.0.0.1
   idempotency_test: true
   additional_copy_path:
     - extra_modules
     - filter_plugins
 
 platforms:
-  - name: freebsd-11.1-amd64
+  - name: freebsd-12.0-amd64
     driver:
-      box: trombik/ansible-freebsd-11.1-amd64
+      box: trombik/ansible-freebsd-12.0-amd64
       box_check_update: false
     driver_config:
       ssh:
@@ -32,36 +33,31 @@ platforms:
       extra_vars:
         ansible_python_interpreter: '/usr/local/bin/python'
 
-  - name: openbsd-6.1-amd64
+  - name: openbsd-6.5-amd64
     driver:
-      box: trombik/ansible-openbsd-6.1-amd64
+      box: trombik/ansible-openbsd-6.5-amd64
       box_check_update: false
     driver_config:
       ssh:
         shell: '/bin/sh'
     provisioner:
       extra_vars:
-        ansible_python_interpreter: '/usr/local/bin/python'
+        ansible_python_interpreter: '/usr/local/bin/python3'
 
-  - name: openbsd-6.2-amd64
+  - name: openbsd-6.6-amd64
     driver:
-      box: trombik/ansible-openbsd-6.2-amd64
+      box: trombik/ansible-openbsd-6.6-amd64
       box_check_update: false
     driver_config:
       ssh:
         shell: '/bin/sh'
     provisioner:
       extra_vars:
-        ansible_python_interpreter: '/usr/local/bin/python'
+        ansible_python_interpreter: '/usr/local/bin/python3'
 
-  - name: ubuntu-14.04-amd64
+  - name: ubuntu-18.04-amd64
     driver:
-      box: trombik/ansible-ubuntu-14.04-amd64
-      box_check_update: false
-
-  - name: ubuntu-16.04-amd64
-    driver:
-      box: trombik/ansible-ubuntu-16.04-amd64
+      box: trombik/ansible-ubuntu-18.04-amd64
       box_check_update: false
 
 suites:
@@ -76,7 +72,7 @@ suites:
     provisioner:
       name: ansible_playbook
       playbook: tests/serverspec/without_x509.yml
-      # use null here as trombik.x509-certificate is not a requirement when
+      # use null here as trombik.x509_certificate is not a requirement when
       # not using TLS
       requirements_path: ~
     verifier:
