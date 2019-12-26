@@ -1,2 +1,4 @@
 ---
-[]
+
+- name: trombik.freebsd_pkg_repo
+- name: trombik.opensmtpd

@@ -2,8 +2,6 @@
 server1
 
 [client]
-client1
 
 [all:children]
 server
-client

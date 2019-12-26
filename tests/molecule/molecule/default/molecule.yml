@@ -1,6 +1,10 @@
 ---
 dependency:
   name: galaxy
+  options:
+    # XXX relative path from scenario directory does not work
+    # https://github.com/ansible/molecule/issues/1509
+    role-file: molecule/default/requirements.yml
 
 driver:
   name: vagrant
