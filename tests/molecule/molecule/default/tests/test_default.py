@@ -2,20 +2,31 @@ import os
 
 import testinfra
 import testinfra.utils.ansible_runner
+import imaplib
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
+def get_imap_object(host):
+    if is_docker(host):
+        host = '127.0.0.1'
+        port = 1143
+    else:
+        host = '192.168.21.200'
+        port = 143
+    return imaplib.IMAP4(host, port)
+
+
 def get_service_name(host):
     if host.system_info.distribution == 'freebsd':
-        return 'openssh'
+        return 'dovecot'
     if host.system_info.distribution == 'openbsd':
-        return 'sshd'
+        return 'dovecot'
     elif host.system_info.distribution == 'ubuntu':
-        return 'sshd'
+        return 'dovecot'
     elif host.system_info.distribution == 'centos':
-        return 'sshd'
+        return 'dovecot'
     raise NameError('Unknown distribution')
 
 
@@ -27,25 +38,6 @@ def get_ansible_facts(host):
     return host.ansible('setup')['ansible_facts']
 
 
-def get_ping_target(host):
-    ansible_vars = get_ansible_vars(host)
-    if ansible_vars['inventory_hostname'] == 'server1':
-        return 'client1' if is_docker(host) else '192.168.21.100'
-    elif ansible_vars['inventory_hostname'] == 'client1':
-        return 'server1' if is_docker(host) else '192.168.21.200'
-    else:
-        raise NameError(
-                "Unknown host `%s`" % ansible_vars['inventory_hostname']
-              )
-
-
-def read_remote_file(host, filename):
-    f = host.file(filename)
-    assert f.exists
-    assert f.content is not None
-    return f.content.decode('utf-8')
-
-
 def is_docker(host):
     ansible_facts = get_ansible_facts(host)
     if 'ansible_virtualization_type' in ansible_facts:
@@ -54,78 +46,18 @@ def is_docker(host):
     return False
 
 
-def read_digest(host, filename):
-    uri = "ansible://client1?ansible_inventory=%s" \
-            % os.environ['MOLECULE_INVENTORY_FILE']
-    client1 = host.get_host(uri)
-    return read_remote_file(client1, filename)
-
-
-def get_listen_ports(host):
-    if host.system_info.distribution == 'freebsd':
-        return [22, 10022]
-    if host.system_info.distribution == 'openbsd':
-        return [22, 10022]
-    elif host.system_info.distribution == 'ubuntu':
-        return [22, 10022]
-    elif host.system_info.distribution == 'centos':
-        return [22]
-    raise NameError('Unknown distribution')
-
-
-def test_hosts_file(host):
-    f = host.file('/etc/hosts')
-
-    assert f.exists
-    assert f.user == 'root'
-    assert f.group == 'root' or f.group == 'wheel'
-
-
-def test_icmp_from_client(host):
-    ansible_vars = get_ansible_vars(host)
-    if ansible_vars['inventory_hostname'] == 'client1':
-        target = get_ping_target(host)
-        cmd = host.run("ping -c 1 -q %s" % target)
-
-        assert cmd.succeeded
-
-
-def test_icmp_from_server(host):
-    ansible_vars = get_ansible_vars(host)
-    if ansible_vars['inventory_hostname'] == 'server1':
-        target = get_ping_target(host)
-        cmd = host.run("ping -c 1 -q %s" % target)
-
-        assert cmd.succeeded
-
-
 def test_service(host):
     s = host.service(get_service_name(host))
 
-    # XXX in docker, host.service() does not work
-    if not is_docker(host):
+    # use sudo as pid file has strict permission on FreeBSD
+    with host.sudo():
         assert s.is_running
         assert s.is_enabled
 
 
-def test_port(host):
-    ports = get_listen_ports(host)
+def test_login(host):
+    user = 'john@example.org'
+    password = 'PassWord'
 
-    for p in ports:
-        assert host.socket("tcp://:::%d" % p).is_listening
-
-
-def test_find_digest1_on_client(host):
-    ansible_vars = get_ansible_vars(host)
-    if ansible_vars['inventory_hostname'] == 'client1':
-        f = host.file('/tmp/digest1')
-
-        assert f.exists
-
-
-def test_find_digest2_on_client(host):
-    ansible_vars = get_ansible_vars(host)
-    if ansible_vars['inventory_hostname'] == 'client1':
-        f = host.file('/tmp/digest2')
-
-        assert f.exists
+    imap = get_imap_object(host)
+    assert imap.login(user, password)
