@@ -1,0 +1,55 @@
+---
+
+- name: Coverage
+  hosts: all
+  pre_tasks:
+    - name: Dump all hostvars
+      debug:
+        var: hostvars[inventory_hostname]
+  post_tasks:
+    - name: List all services (systemd)
+      # workaround ansible-lint: [303] service used in place of service module
+      shell: "echo; systemctl list-units --type service"
+      changed_when: false
+      when:
+        # in docker, init is not systemd
+        - ansible_virtualization_type != 'docker'
+        - ansible_os_family == 'RedHat' or ansible_os_family == 'Debian'
+    - name: list all services (FreeBSD service)
+      # workaround ansible-lint: [303] service used in place of service module
+      shell: "echo; service -l"
+      changed_when: false
+      when:
+        - ansible_os_family == 'FreeBSD'
+    - name: list all services (rcctl)
+      command: "rcctl ls all"
+      changed_when: false
+      when:
+        - ansible_os_family == 'OpenBSD'
+  roles:
+    - role: docker
+      when:
+        - ansible_virtualization_type == 'docker'
+    - role: trombik.template_role
+  vars:
+    os_template_role_flags:
+      OpenBSD: -4
+      FreeBSD: ""
+      Debian: ""
+      RedHat: ""
+
+    # on RedHat, non-default port is not allowed to listen on
+    # on FreeBSD, sshd from the base and one from the package are both running
+    os_ports:
+      OpenBSD: [22, 10022]
+      FreeBSD: [10022]
+      Debian: [22, 10022]
+      RedHat: [22]
+    template_role_flags: "{{ os_template_role_flags[ansible_os_family] }}"
+    template_role_extra_groups:
+      - bin
+    template_role_config: |
+      UseDNS no
+      {% for p in os_ports[ansible_os_family] %}
+      Port {{ p }}
+      {% endfor %}
