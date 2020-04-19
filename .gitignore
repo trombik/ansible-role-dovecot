@@ -3,7 +3,6 @@
 *.swp
 .bundle/
 vendor/
-Gemfile.lock
 pytestdebug.log
 *.pyc
 __pycache__/
