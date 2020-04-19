@@ -1,3 +1,10 @@
+## Release 1.3.2
+
+* 655510e bugfix: bump box version
+* 406d3f0 bugfix: QA
+* 89567f4 bugfix: adjust the tests
+* d69c5c2 wip: import molecule test
+
 ## Release 1.3.1
 
 * d4f1e59 bugfix: Do not create dovecot home directory
